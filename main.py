@@ -1,6 +1,8 @@
 # Copyright (C) 2025  Cooper Lockrey
 # See LICENSE for more details.
 import random
+from collections import Counter
+from tqdm import tqdm
 
 # probability for each type of node to appear
 node_probabilities = {
@@ -92,7 +94,7 @@ elite_card_probs = {
     "uncommon": 40,
     "common": 50
 }
-shop_card_probs = {
+merchant_card_probs = {
     "rare": 9,
     "uncommon": 37,
     "common": 54
@@ -157,7 +159,7 @@ def gen_card(base_probabilities, offset):
 
     # we get the probabilities for the draw
     card_probabilities = gen_card_probabilites(base_probabilities, offset)
-    # same standard random choice block
+    # same standard random choice 
     rand = random.random()
     cumulative_probability = 0
     for card_type, prob in card_probabilities.items():
@@ -165,13 +167,50 @@ def gen_card(base_probabilities, offset):
         if rand <= cumulative_probability:
             return card_type
 
-for i in range(70):
-    print(gen_card_probabilites(monster_card_probs, offset))
-    card = gen_card(monster_card_probs, offset)
-    match card:
-        case "rare":
-            offset = -5
-        case "common":
-            offset += 1
-    print(card)
+# lets try to make a game and generate cards for it
+# scratch that, 1 million games
+world = gen_world()
+games = 1000000
+rare_draws = 0
+uncommon_draws = 0
+common_draws = 0
+for i in tqdm(range(games)):
+    for node in world:
+        match node:
+            case "monster":
+                for i in range(3):
+                        match gen_card(monster_card_probs, offset):
+                            case "rare":
+                                offset = -5
+                                rare_draws += 1
+                            case "uncommon":
+                                uncommon_draws += 1
+                            case "common":
+                                offset += 1
+                                common_draws += 1
+            case "elite":
+                for i in range(3):
+                        match gen_card(elite_card_probs, offset):
+                            case "rare":
+                                offset = -5
+                                rare_draws += 1
+                            case "uncommon":
+                                uncommon_draws += 1
+                            case "common":
+                                offset += 1
+                                common_draws += 1
+            case "merchant":
+                for i in range(7):
+                        match gen_card(merchant_card_probs, offset):
+                            case "rare":
+                                rare_draws += 1
+                            case "uncommon":
+                                uncommon_draws += 1
+                            case "common":
+                                common_draws += 1
+            case "boss":
+                offset = -5
+                for i in range(3):
+                    rare_draws += 1
 
+print([rare_draws/games, uncommon_draws/games, common_draws/games])
