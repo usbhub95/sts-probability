@@ -24,6 +24,7 @@ Clone the repository:
 
 ```
 git clone https://github.com/usbhub95/sts-probability
+cd sts-probability
 ```
 
 Install required Python modules:
