@@ -39,14 +39,14 @@ def gen_node(level):
                     return node_type
 
 def gen_map():
-    # generates a map which consists of 15 nodes, following some rules:
-    # node 1 is always a monster, node 9 is always a treasure, node 14 is never a rest site and node 15 is always a rest site
+    # generates a map which consists of 16 nodes, following some rules:
+    # node 1 is always a monster, node 9 is always a treasure, node 14 is never a rest site, node 15 is always a rest site and node 16 is always the boss
     # nodes 1-5 can never be an elite or rest site
-    # returns a list of 15 nodes
+    # returns a list of 16 nodes
 
     # this is a list containing all the nodes for the current level
     level = []
-    for i in range(15):
+    for i in range(16):
         if i == 0:
             level.append("monster")
         elif i < 5:
@@ -65,13 +65,15 @@ def gen_map():
             level.append(node)
         elif i == 14:
             level.append("rest_site")
+        elif i == 15:
+            level.append("boss")
         else:
             level.append(gen_node(level))
     return level
 
 def gen_world():
-    # generates a world (list of 45 nodes which is just 3 levels joined together)
-    # returns a list of 45 nodes (3 levels)
+    # generates a world (list of 48 nodes which is just 3 levels joined together)
+    # returns a list of 48 nodes (3 levels)
 
     world = []
     # 3 levels per world
@@ -79,5 +81,79 @@ def gen_world():
         world += gen_map()
     return world
 
-world = gen_world()
-print(world)
+# world = gen_world()
+# print(world)
+
+monster_card_probs = {
+    "rare": 3,
+    "uncommon": 37,
+    "common": 60
+}
+elite_card_probs = {
+    "rare": 10,
+    "uncommon": 40,
+    "common": 50
+}
+shop_card_probs = {
+    "rare": 9,
+    "uncommon": 37,
+    "common": 54
+}
+
+offset = -5
+
+def gen_card_probabilites(base_probabilities, offset):
+    rare_offset = 0
+    uncommon_offset = 0
+    common_offset = 0
+    rare_prob = base_probabilities["rare"]
+    uncommon_prob = base_probabilities["uncommon"]
+    common_prob = base_probabilities["common"]
+
+    if offset * -1 >= rare_prob:
+        common_offset = offset * -1
+        uncommon_offset = offset + rare_prob
+        rare_offset = rare_prob * -1
+    elif offset <= 0:
+        common_offset = offset * -1
+        rare_offset = offset
+    elif offset > 0 and offset <= common_prob:
+        rare_offset = offset
+        common_offset = offset * -1
+    elif offset > common_prob:
+        rare_offset = offset
+        uncommon_offset = (offset - common_prob) * -1
+        common_offset = common_prob * -1
+
+    rare_prob += rare_offset
+    uncommon_prob += uncommon_offset
+    common_prob += common_offset
+    return {
+        "rare": rare_prob / 100,
+        "uncommon": uncommon_prob / 100,
+        "common": common_prob / 100
+    }
+
+# print(gen_card_probabilites(monster_card_probs, offset))
+# print(gen_card_probabilites(elite_card_probs, offset))
+# print(gen_card_probabilites(shop_card_probs, offset))
+
+def gen_card(base_probabilities, offset):
+    card_probabilities = gen_card_probabilites(base_probabilities, offset)
+    rand = random.random()
+    cumulative_probability = 0
+    for card_type, prob in card_probabilities.items():
+        cumulative_probability += prob
+        if rand <= cumulative_probability:
+            return card_type
+
+for i in range(70):
+    print(gen_card_probabilites(monster_card_probs, offset))
+    card = gen_card(monster_card_probs, offset)
+    match card:
+        case "rare":
+            offset = -5
+        case "common":
+            offset += 1
+    print(card)
+
