@@ -35,4 +35,9 @@ pip install -r _requirements.txt
 
 ## Usage <a name = "usage"></a>
 
-Just run main.py. You can change the number of games you want to run at the bottom of the file.
+Just run main.py. 
+```
+python main.py
+```
+
+You can change the number of games you want to run at the bottom of the file on line 172.
