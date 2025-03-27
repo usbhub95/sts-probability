@@ -81,9 +81,7 @@ def gen_world():
         world += gen_map()
     return world
 
-# world = gen_world()
-# print(world)
-
+# card probabilites for each type of draw
 monster_card_probs = {
     "rare": 3,
     "uncommon": 37,
@@ -100,46 +98,66 @@ shop_card_probs = {
     "common": 54
 }
 
+# the offset value the game uses for altering the rare drop rate
 offset = -5
 
 def gen_card_probabilites(base_probabilities, offset):
-    rare_offset = 0
+    # this function generates a dict of probabilites based off an input set of probabilites and an offset value according to some rules the game uses
+    #                          negative offset
+    #         rare                 uncommon                     common
+    # less likely until 0 | less likely if rare is 0 | always more likely until 100
+
+    #                          positive offset
+    #          rare                     uncommon                         common
+    # more likely until 100 | less likely if common is at 0 | always less likely until 0
+
+    # the function takes a dict of base probabilites and an offset value
+    # it returns a dict of probabilites in the same format as the base probabilities
     uncommon_offset = 0
-    common_offset = 0
     rare_prob = base_probabilities["rare"]
     uncommon_prob = base_probabilities["uncommon"]
     common_prob = base_probabilities["common"]
 
+    # this is the logic for altering the probabilities
     if offset * -1 >= rare_prob:
+        # this handles the case of a negative offset that would take rare to negative
         common_offset = offset * -1
         uncommon_offset = offset + rare_prob
         rare_offset = rare_prob * -1
     elif offset <= 0:
+        # this handles the case of a negative or 0 offset that wouldnt take rare to negative
         common_offset = offset * -1
         rare_offset = offset
     elif offset > 0 and offset <= common_prob:
+        # this handles the case of a positive offset that wouldnt take uncommon down
         rare_offset = offset
         common_offset = offset * -1
     elif offset > common_prob:
+        # this handles the case of a positive offset that would take uncommon down
         rare_offset = offset
         uncommon_offset = (offset - common_prob) * -1
         common_offset = common_prob * -1
 
+    # we now adjust the probabilites how we want
     rare_prob += rare_offset
     uncommon_prob += uncommon_offset
     common_prob += common_offset
+
+    # we return the new probs
     return {
         "rare": rare_prob / 100,
         "uncommon": uncommon_prob / 100,
         "common": common_prob / 100
     }
 
-# print(gen_card_probabilites(monster_card_probs, offset))
-# print(gen_card_probabilites(elite_card_probs, offset))
-# print(gen_card_probabilites(shop_card_probs, offset))
-
 def gen_card(base_probabilities, offset):
+    # this function generates a card based on the current probabilities with offset
+    # it takes in a dict of probabilities and an offset
+    # it returns a card type according to the probabilities
+
+    # we get the probabilities for the draw
     card_probabilities = gen_card_probabilites(base_probabilities, offset)
+    # same standard random choice block
     rand = random.random()
     cumulative_probability = 0
     for card_type, prob in card_probabilities.items():
