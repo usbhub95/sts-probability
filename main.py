@@ -169,12 +169,12 @@ def gen_card(base_probabilities, offset):
 
 # lets try to make a game and generate cards for it
 # scratch that, 1 million games
-world = gen_world()
 games = 1000000
 rare_draws = 0
 uncommon_draws = 0
 common_draws = 0
 for i in tqdm(range(games)):
+    world = gen_world()
     for node in world:
         match node:
             case "monster":
