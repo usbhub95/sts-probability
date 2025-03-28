@@ -175,53 +175,53 @@ uncommon_draws = 0
 common_draws = 0
 colourless_rare_draws = 0
 colourless_uncommon_draws = 0
-colourless_common_draws = 0
 for i in tqdm(range(games)):
     world = gen_world()
     for node in world:
         match node:
             case "monster":
                 for i in range(3):
-                        match gen_card(monster_card_probs, offset):
-                            case "rare":
-                                offset = -5
-                                rare_draws += 1
-                            case "uncommon":
-                                uncommon_draws += 1
-                            case "common":
-                                offset += 1
-                                common_draws += 1
+                    match gen_card(monster_card_probs, offset):
+                        case "rare":
+                            offset = -5
+                            rare_draws += 1
+                        case "uncommon":
+                            uncommon_draws += 1
+                        case "common":
+                            offset += 1
+                            common_draws += 1
             case "elite":
                 for i in range(3):
-                        match gen_card(elite_card_probs, offset):
-                            case "rare":
-                                offset = -5
-                                rare_draws += 1
-                            case "uncommon":
-                                uncommon_draws += 1
-                            case "common":
-                                offset += 1
-                                common_draws += 1
+                    match gen_card(elite_card_probs, offset):
+                        case "rare":
+                            offset = -5
+                            rare_draws += 1
+                        case "uncommon":
+                            uncommon_draws += 1
+                        case "common":
+                            offset += 1
+                            common_draws += 1
             case "merchant":
                 for i in range(5):
-                        match gen_card(merchant_card_probs, offset):
-                            case "rare":
-                                rare_draws += 1
-                            case "uncommon":
-                                uncommon_draws += 1
-                            case "common":
-                                common_draws += 1
+                    match gen_card(merchant_card_probs, offset):
+                        case "rare":
+                            rare_draws += 1
+                        case "uncommon":
+                            uncommon_draws += 1
+                        case "common":
+                            common_draws += 1
                 for i in range(2):
-                        match gen_card(merchant_card_probs, offset):
-                            case "rare":
-                                colourless_rare_draws += 1
-                            case "uncommon":
-                                colourless_uncommon_draws += 1
-                            case "common":
-                                colourless_common_draws += 1
+                    card = gen_card(merchant_card_probs, offset)
+                    while card == "common":
+                        card = gen_card(merchant_card_probs, offset)
+                    match gen_card(merchant_card_probs, offset):
+                        case "rare":
+                            colourless_rare_draws += 1
+                        case "uncommon":
+                            colourless_uncommon_draws += 1
             case "boss":
                 offset = -5
                 for i in range(3):
                     rare_draws += 1
 
-print([rare_draws/games, uncommon_draws/games, common_draws/games], [colourless_rare_draws/games, colourless_uncommon_draws/games, colourless_common_draws/games])
+print([rare_draws/games, uncommon_draws/games, common_draws/games], [colourless_rare_draws/games, colourless_uncommon_draws/games])
