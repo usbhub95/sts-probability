@@ -214,7 +214,7 @@ for i in tqdm(range(games)):
                     card = gen_card(merchant_card_probs, offset)
                     while card == "common":
                         card = gen_card(merchant_card_probs, offset)
-                    match gen_card(merchant_card_probs, offset):
+                    match card:
                         case "rare":
                             colourless_rare_draws += 1
                         case "uncommon":
