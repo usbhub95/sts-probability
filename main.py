@@ -224,4 +224,4 @@ for i in tqdm(range(games)):
                 for i in range(3):
                     rare_draws += 1
 
-print([rare_draws/games, uncommon_draws/games, common_draws/games], [colourless_rare_draws/games, colourless_uncommon_draws/games])
+print("coloured rares: " + str(rare_draws/games) + ", coloured uncommons: " + str(uncommon_draws/games) + ", coloured commons: " + str(common_draws/games) + ", colourless rares: " + str(colourless_rare_draws/games) + ", colourless uncommons: " + str(colourless_uncommon_draws/games))
